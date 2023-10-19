@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Highlight Nearest Element</title>
+  <style>
+    .highlighted {
+      outline: #ffd65b solid 5px !important;
+    }
+     /* Styles for the modal overlay */
+     .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Styles for the modal content */
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    /* Style for the close button */
+    .close-button {
+      cursor: pointer;
+      color: red;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    #feedback{
+      top: 50%;
+      display: block;
+      position: absolute;
+      right: -25px;
+      transform: rotate(-90deg);
+      background-color: blue;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+    }
+
+    /* Style for table headers (optional) */
+    th {
+      background-color: #f2f2f2;
+    }
+
+    /* Style for table rows */
+    tr {
+      border-bottom: 1px solid #ccc;
+    }
+
+    /* Style for table cells (data) */
+    td {
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <p>This is a paragraph.</p>
+    <p>adasd</p>
+    <ul>
+      <li>sdsdasdaasdda</li>
+    </ul>
+  </div>
+  <div>
+    <p>This is another paragraph.</p>
+  </div>
+  <p>This is another paragraph.</p>
+  <table>
+    <thead>
+      <tr>
+      <th>raj</th>
+      <th>rama</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td>Hello</td>
+      <td>hi</td>
+    </tr>
+    </tbody>
+   
+  </table>
+ <button id="feedback" onclick="handleButtonClick()">Feedback</button>
+  <script>
+
+    // this is the function to trigger highlight part
+
+    function handleButtonClick(){
+      document.getElementById('feedback').style.display="none";
+      // Add a mousemove event listener to the document
+      document.addEventListener('mousemove', handleHover);
+      // Add a click event listener to the document so onlick of highlighted elment modal comeup
+      document.addEventListener('click', handleClick);
+    }
+    
+    // Function to add a class to the closest element to the cursor
+    function handleHover(event) {
+      const x = event.clientX;
+      const y = event.clientY;
+
+      const elements = document.elementsFromPoint(x, y);
+      const highlightedElements = document.querySelectorAll('.highlighted');
+
+      // Remove the class from previously highlighted elements
+      highlightedElements.forEach(element => {
+        element.classList.remove('highlighted');
+      });
+
+      let nearestElement = null;
+      let minDistance = Number.MAX_SAFE_INTEGER;
+
+      // Find the element closest to the cursor
+
+        const element = elements[0];
+
+        if (element.nodeName === 'BODY' || element.nodeName === 'HTML' ) {
+          return; // Skip elements not within the body or is the target element.
+        }
+
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestElement = element;
+        }
+        if (nearestElement) {
+        nearestElement?.classList.add('highlighted');
+      }
+      }
+
+      function handleClick(event) {
+      const target = event.target;
+      // remove any highligted class present in dom
+      if (target.classList.contains('highlighted')) {
+        const highlightedElements = document.querySelectorAll('.highlighted');
+        highlightedElements.forEach(element => {
+        element.classList.remove('highlighted');
+       });
+      //  remove highlighting  listener because your opening modal
+      document.removeEventListener('mousemove', handleHover);
+        // Add your click event handling code here
+      if (document.querySelector('.modal-overlay') === null) {
+        showAlert(target.outerHTML);
+        }
+      }
+    }
+    // for showing modal
+    function showAlert(message) {
+      const modalOverlay = document.createElement('div');
+      modalOverlay.className = 'modal-overlay';
+
+      const modalContent = document.createElement('div');
+      modalContent.className = 'modal-content';
+      modalContent.innerHTML = message;
+
+      const closeButton = document.createElement('span');
+      closeButton.className = 'close-button';
+      closeButton.innerText = 'X';
+
+      closeButton.addEventListener('click', function() {
+        modalOverlay.style.display = 'none';
+        document.body.removeChild(modalOverlay);
+        document.getElementById('feedback').style.display="block";
+      });
+
+      modalContent.appendChild(closeButton);
+      modalOverlay.appendChild(modalContent);
+      document.body.appendChild(modalOverlay);
+
+      modalOverlay.style.display = 'flex';
+    }
+
+
+      
+    
+
+  
+  </script>
+</body>
+</html>
